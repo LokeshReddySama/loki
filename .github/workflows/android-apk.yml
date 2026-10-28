@@ -1,11 +1,16 @@
+
 name: Build Earn Senses APK
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
     steps:
       - name: Download project
         uses: actions/checkout@v4
@@ -18,13 +23,19 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
+
+      - name: Install Android SDK 35
+        run: |
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Build APK
+      - name: Build Earn Senses APK
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Upload APK
@@ -32,4 +43,5 @@ jobs:
         with:
           name: EarnSensesV1-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
 
